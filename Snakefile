@@ -33,40 +33,12 @@ rule bet:
     shell: 'bet {input} {output}'
 
 
-rule calc_avg_brain_size:
-    input:
-        brains=expand(rules.bet.output,
-            zip,
-            **inputs.input_zip_lists['t1'])
-    output:
-        txt=bids(
-                root='results',
-                suffix='avgbrainsize.txt',
-                include_subject_dir=False,
-                include_session_dir=False)
-    run:
-        brain_sizes = []
-        for brain_nii in input.brains:
-            data = nibabel.load(brain_file).get_data()
-            brain_sizes.append((data != 0).sum())        
             
-        with open(output.txt, 'w') as fp:
-            fp.write("Average brain size is {avg} voxels".format(
-                avg = np.array(brain_sizes).mean()))
-
-            
-rule all_participant:
+rule all:
     input:
         expand(
             rules.bet.output,
             zip,
             **inputs.input_zip_lists['t1']
         )
-    default_target: True
-
-rule all_group:
-    input:
-        rules.calc_avg_brain_size.output
-
-
 
