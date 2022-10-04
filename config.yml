@@ -1,0 +1,24 @@
+bids_dir: 'test_data/fakebids'
+
+#this configures the pybids grabber - create an entry for each type of input you want to grab
+# indexed by name of input
+#   dictionary for each input is passed directly to pybids get()
+#    https://bids-standard.github.io/pybids/generated/bids.layout.BIDSLayout.html#bids.layout.BIDSLayout.get
+
+singularity:
+  fsl: 'docker://brainlife/fsl/6.0.0'
+
+
+pybids_inputs:
+  t1:
+    filters:
+      suffix: 'T1w'
+      extension: '.nii.gz'
+      datatype: 'anat'
+    wildcards:
+      - subject
+      - session
+      - acquisition
+      - run
+
+

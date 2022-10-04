@@ -1,28 +1,15 @@
-#---- begin snakebids boilerplate ----------------------------------------------
+from snakebids import bids, generate_inputs
 
-import snakebids
-from snakebids import bids
-
-configfile: 'config/snakebids.yml'
+configfile: 'config.yml'
 
 
 # parse bids dataset with snakebids
-inputs = snakebids.generate_inputs(
+inputs = generate_inputs(
     bids_dir=config["bids_dir"],
     pybids_inputs=config["pybids_inputs"],
-    pybids_database_dir=config.get("pybids_db_dir"),
-    pybids_reset_database=config.get("pybids_db_reset"),
-    derivatives=config.get("derivatives", None),
-    participant_label=config.get("participant_label", None),
-    exclude_participant_label=config.get("exclude_participant_label", None),
     use_bids_inputs=True,
 )
 
-
-#this adds constraints to the bids naming
-wildcard_constraints:  **snakebids.get_wildcard_constraints(config['pybids_inputs'])
-
-#---- end snakebids boilerplate ------------------------------------------------
 
 
 rule bet:
@@ -30,7 +17,7 @@ rule bet:
         inputs.input_path['t1']
     output:
         bids(
-            root=config['root'],
+            root='results',
             datatype='anat',
             desc='brain',
             suffix='T1w.nii.gz',
@@ -53,7 +40,7 @@ rule calc_avg_brain_size:
             **inputs.input_zip_lists['t1'])
     output:
         txt=bids(
-                root=config['root'],
+                root='results',
                 suffix='avgbrainsize.txt',
                 include_subject_dir=False,
                 include_session_dir=False)
