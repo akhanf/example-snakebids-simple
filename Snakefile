@@ -10,7 +10,19 @@ inputs = generate_inputs(
     use_bids_inputs=True,
 )
 
-
+rule all:
+    input:
+        expand(
+            bids(
+                root='results',
+                datatype='anat',
+                desc='brain',
+                suffix='T1w.nii.gz',
+                **inputs.input_wildcards['t1']
+            ),
+            zip,
+            **inputs.input_zip_lists['t1']
+        )
 
 rule bet:
     input: 
@@ -30,15 +42,4 @@ rule bet:
             suffix='bet.log',
             **inputs.input_wildcards['t1']
         )
-    shell: 'bet {input} {output}'
-
-
-            
-rule all:
-    input:
-        expand(
-            rules.bet.output,
-            zip,
-            **inputs.input_zip_lists['t1']
-        )
-
+    shell: 'bet {input} {output} > {log}'
